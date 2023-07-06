@@ -1,13 +1,13 @@
 function doPost(event) {
-  var contents = JSON.parse(event.postData.contents);
-  var challenge = contents.challenge;
+  let contents = JSON.parse(event.postData.contents);
+  let challenge = contents.challenge;
 
   // is an event
-  if (contents.event != undefined) {
-    var data = {
+  if (contents.event) {
+    let data = {
       'text': `A reaction of type :${contents.event.reaction}: was made!`
     };
-    var options = {
+    let options = {
       'contentType': 'application/json',
       'payload': JSON.stringify(data)
     };
