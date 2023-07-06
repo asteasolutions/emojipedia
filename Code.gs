@@ -1,18 +1,34 @@
 function doPost(event) {
+  const REACTION_ADDED = "reaction_added";
+  const REACTION_REMOVED = "reaction_removed";
+
   let contents = JSON.parse(event.postData.contents);
   let challenge = contents.challenge;
 
   // is an event
   if (contents.event) {
+    let event = contents.event;
+    let eventType = event.type;
+
     let data = {
-      'text': `A reaction of type :${contents.event.reaction}: was made!`
+      'text': null
     };
+
+    switch (eventType) {
+      case REACTION_ADDED:
+        data.text = `A reaction of type :${event.reaction}: was added!`;
+        break;
+      case REACTION_REMOVED:
+        data.text = `A reaction of type :${event.reaction}: was removed!`;
+        break;
+    }
+
     let options = {
       'contentType': 'application/json',
       'payload': JSON.stringify(data)
     };
 
-    UrlFetchApp.fetch('https://hooks.slack.com/services/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', options);
+    UrlFetchApp.fetch(PropertiesService.getScriptProperties().getProperty("SLACK_WEBHOOK_URL"), options);
   }
 
   return ContentService.createTextOutput(challenge);
