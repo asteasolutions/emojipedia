@@ -13,11 +13,32 @@ function getEmojis() {
   let responseJSON = JSON.parse(response);
   let emojis = responseJSON.emoji;
 
-  // start filling from the first cell
-  const currentCell = sheet.getRange("A1");
-  sheet.setCurrentCell(currentCell);
-
   for (let key in emojis) {
-    sheet.appendRow([key]);
+    sheet.appendRow([key, 0]);
+  }
+}
+
+function emojiChangeEvent(event) {
+  const ss = SpreadsheetApp.openByUrl(PropertiesService.getScriptProperties().getProperty('SPREADSHEET_URL'));
+  const sheet = ss.getSheetByName('Sheet1');
+  
+  let subtype = event.subtype;
+  let textFinder;
+
+  switch (subtype) {
+    case "add":
+      sheet.appendRow([event.name, 0]);
+      break;
+    case "remove":
+      for (let i in event.names) {
+        textFinder = sheet.createTextFinder(event.names[i]);
+        sheet.deleteRow(textFinder.findNext().getRow()); // TODO: read docs about getting rows
+      }
+      break;
+    case "rename":
+      textFinder = sheet.createTextFinder(event.old_name);
+      let cell = textFinder.findNext();
+      cell.setValue(event.new_name);
+      break;
   }
 }
