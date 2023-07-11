@@ -32,7 +32,7 @@ function emojiChangeEvent(event) {
     case "remove":
       for (let i in event.names) {
         textFinder = sheet.createTextFinder(event.names[i]);
-        sheet.deleteRow(textFinder.findNext().getRow()); // TODO: read docs about getting rows
+        sheet.deleteRow(textFinder.findNext().getRow());
       }
       break;
     case "rename":
