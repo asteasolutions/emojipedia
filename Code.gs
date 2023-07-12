@@ -35,12 +35,18 @@ function doPost(event) {
       case REACTION_REMOVED:
         reactionRemoved(data, event, sheet);
         break;
+      case "emoji_changed":
+        emojiChangeEvent(event);
+        data.text = JSON.stringify(contents);
+        break;
     }
 
     let options = {
       'contentType': 'application/json',
       'payload': JSON.stringify(data)
     };
+
+    postMessage(data.text, threadsSheet.getRange(threadChannelCell).getValue(), threadsSheet.getRange(currentThreadCell).getValue());
 
     UrlFetchApp.fetch(PropertiesService.getScriptProperties().getProperty("SLACK_WEBHOOK_URL"), options);
 
@@ -69,27 +75,6 @@ function reactionAdded(data, event, sheet) {
   }
 }
 
-function newMessage(text = undefined, thread) {
-  var data = {
-    'text': text || ':not-bad:', 
-    // 'thread_ts': thread || ''
-    //https://asteasolution-it03267.slack.com/archives/C05EKHEF52B/p1689151108852829
-  };
-
-  if (thread) {
-    data.thread_ts = thread;
-  }
-
-  var options = {
-    'method': 'post',
-    'contentType': 'application/json',
-    // Convert the JavaScript object to a JSON string.
-    'payload': JSON.stringify(data)
-  };
-
-  return UrlFetchApp.fetch(PropertiesService.getScriptProperties().getProperty("SLACK_WEBHOOK_URL"), options);
-}
-
 function postMessage(text, channel, thread) {
   let options = {
     'method': 'post',
@@ -105,6 +90,8 @@ function postMessage(text, channel, thread) {
   if (thread) {
     options.payload.thread_ts = thread;
   }
+
+  Logger.log(options);
 
   return UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', options);
 }

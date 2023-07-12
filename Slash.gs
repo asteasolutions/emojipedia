@@ -5,7 +5,7 @@ function handleSlashCommand(request) {
     case "/get-emoji-count":
       return handleGetEmojiCount(parameters.text);
     case "/new-thread":
-      handleNewThread(parameters.user_name);
+      return handleNewThread(parameters.user_name);
   }
 }
 
@@ -33,7 +33,7 @@ function handleGetEmojiCount(text) {
 const currentThreadCell = "B1";
 const threadChannelCell = "B2";
 
-function handleNewThread(user_name) {
+function handleNewThread(userId) {
   const spreadSheet = SpreadsheetApp.openByUrl(PropertiesService.getScriptProperties().getProperty('SPREADSHEET_URL'));
   const sheet = spreadSheet.getSheetByName('threads');
 
@@ -41,7 +41,7 @@ function handleNewThread(user_name) {
 
   let currentThread = sheet.getRange(currentThreadCell).getValue();
 
-  let postMessageResponse = JSON.parse(postMessage(`A new thread was created by @${user_name}`, threadChannel));
+  let postMessageResponse = JSON.parse(postMessage(`A new thread was created by <@${userId}>`, threadChannel));
   let newThread = postMessageResponse.ts;
 
   // previous threads are available
@@ -52,6 +52,8 @@ function handleNewThread(user_name) {
 
   // change currentThread
   sheet.getRange(currentThreadCell).setValue(newThread);
+
+  return ContentService.createTextOutput();
 }
 
 function getMessageLink(channel, message_ts) {
