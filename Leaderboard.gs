@@ -1,14 +1,31 @@
+const LeaderboardType = {
+  MOST_USED: 0,
+  LEAST_USED: 1
+};
+
 function run() {
   const ss = SpreadsheetApp.openByUrl(PropertiesService.getScriptProperties().getProperty('SPREADSHEET_URL'));
-  const sheet = ss.getSheetByName('Sheet1');
+  const sheet = ss.getSheetByName('debug');
 
-  getSortedEmojis(sheet);
+  getSortedEmojis(sheet, 3, LeaderboardType.MOST_USED);
 }
 
-function getSortedEmojis(sheet) {
+function getSortedEmojis(sheet, leaderboardLength, leaderboardType) {
   let values = sheet.getDataRange().getValues();
-  values.sort();
-  Logger.log(values);
+
+  if (leaderboardType == LeaderboardType.MOST_USED) {
+    values.sort(compareSheetRecords).reverse();
+  } else {
+    values.sort(compareSheetRecords);
+  }
+
+  let leaderboard = [];
+
+  for (let i = 0; i < leaderboardLength; i++) {
+    leaderboard[i] = values[i];
+  }
+  
+  return leaderboard;
 }
 
 function compareSheetRecords(a, b) {
