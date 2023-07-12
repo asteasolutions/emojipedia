@@ -4,11 +4,8 @@ function handleSlashCommand(request) {
   switch (parameters.command) {
     case "/get-emoji-count":
       return handleGetEmojiCount(parameters.text);
-<<<<<<< HEAD
     case "/new-thread":
-      handleNewThread();
-=======
->>>>>>> ebe53bc37405bdac04791f4071ed95a94298dbd3
+      handleNewThread(parameters.user_name);
   }
 }
 
@@ -32,20 +29,19 @@ function handleGetEmojiCount(text) {
 
   return ContentService.createTextOutput(nextCell.getValue());
 }
-<<<<<<< HEAD
 
-function handleNewThread() {
+const currentThreadCell = "B1";
+const threadChannelCell = "B2";
+
+function handleNewThread(user_name) {
   const spreadSheet = SpreadsheetApp.openByUrl(PropertiesService.getScriptProperties().getProperty('SPREADSHEET_URL'));
   const sheet = spreadSheet.getSheetByName('threads');
-
-  const currentThreadCell = "B1";
-  const threadChannelCell = "B2";
 
   let threadChannel = sheet.getRange(threadChannelCell).getValue();
 
   let currentThread = sheet.getRange(currentThreadCell).getValue();
 
-  let postMessageResponse = JSON.parse(postMessage("A new thread was created.", threadChannel));
+  let postMessageResponse = JSON.parse(postMessage(`A new thread was created by @${user_name}`, threadChannel));
   let newThread = postMessageResponse.ts;
 
   // previous threads are available
@@ -72,5 +68,3 @@ function getMessageLink(channel, message_ts) {
 
   return UrlFetchApp.fetch('https://slack.com/api/chat.getPermalink', options);
 }
-=======
->>>>>>> ebe53bc37405bdac04791f4071ed95a94298dbd3
