@@ -4,8 +4,11 @@ function handleSlashCommand(request) {
   switch (parameters.command) {
     case "/get-emoji-count":
       return handleGetEmojiCount(parameters.text);
+<<<<<<< HEAD
     case "/new-thread":
       handleNewThread();
+=======
+>>>>>>> ebe53bc37405bdac04791f4071ed95a94298dbd3
   }
 }
 
@@ -29,6 +32,7 @@ function handleGetEmojiCount(text) {
 
   return ContentService.createTextOutput(nextCell.getValue());
 }
+<<<<<<< HEAD
 
 function handleNewThread() {
   const spreadSheet = SpreadsheetApp.openByUrl(PropertiesService.getScriptProperties().getProperty('SPREADSHEET_URL'));
@@ -68,3 +72,5 @@ function getMessageLink(channel, message_ts) {
 
   return UrlFetchApp.fetch('https://slack.com/api/chat.getPermalink', options);
 }
+=======
+>>>>>>> ebe53bc37405bdac04791f4071ed95a94298dbd3
