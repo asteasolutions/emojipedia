@@ -19,16 +19,8 @@ function doPost(event) {
     return ContentService.createTextOutput(contents.challenge);
   }
 
-
-  var dataRange = sheet.getDataRange();
-  var values = dataRange.getValues();
-  // if(command){
-  //   handleSlash(event);
-  // }
-  // else{
   // is an event
   if (contents.event) {
-    customlog("has contents.event");
     let event = contents.event;
     let eventType = event.type;
     let data = {
@@ -38,25 +30,10 @@ function doPost(event) {
 
     switch (eventType) {
       case REACTION_ADDED:
-        data.text = `A reaction of type :${event.reaction}: was added!`;
-        textFinder = sheet.createTextFinder(event.reaction);
-        emojiCell = textFinder.findNext();
-        if (emojiCell == null) {
-          sheet.appendRow([event.reaction, 1]);
-          //sheet.getRange(sheet.getLastRow() + 1, 1,).setValues(event.reaction, 0);
-        } else {
-          nextCell = sheet.getRange(emojiCell.getRow(), emojiCell.getColumn() + 1);
-          nextCell.setValue(nextCell.getValue() + 1);
-        }
+        reactionAdded(data, event, sheet);
         break;
       case REACTION_REMOVED:
-        data.text = `A reaction of type :${event.reaction}: was removed!`;
-        textFinder = sheet.createTextFinder(event.reaction);
-        emojiCell = textFinder.findNext();
-        nextCell = sheet.getRange(emojiCell.getRow(), emojiCell.getColumn() + 1);
-        nextCell.setValue(nextCell.getValue() - 1);
-        //if(nextCell.getValue() > 0){
-        //}
+        reactionRemoved(data, event, sheet);
         break;
     }
 
@@ -66,34 +43,70 @@ function doPost(event) {
     };
 
     UrlFetchApp.fetch(PropertiesService.getScriptProperties().getProperty("SLACK_WEBHOOK_URL"), options);
-  } else {
-    customlog(event);
-    customlog(JSON.stringify(event));
-    handleSlash(event);
-    //debugSheet.appendRow(event);
-    //debugSheet.getRange().setValue(event);
-  }
-}
-//}
 
 
-
-
-function emojiCounterUpdate() {
-
-}
-
-function customlog(text) {
-  if (text) {
-    debugSheet.appendRow([text]);
-  } else {
-    debugSheet.appendRow(["no valid parameter"]);
   }
 }
 
+function reactionRemoved(data, event, sheet) {
+  data.text = `A reaction of type :${event.reaction}: was removed!`;
+  textFinder = sheet.createTextFinder(event.reaction);
+  emojiCell = textFinder.findNext();
+  nextCell = sheet.getRange(emojiCell.getRow(), emojiCell.getColumn() + 1);
+  nextCell.setValue(nextCell.getValue() - 1);
+}
 
+function reactionAdded(data, event, sheet) {
+  data.text = `A reaction of type :${event.reaction}: was added!`;
+  textFinder = sheet.createTextFinder(event.reaction);
+  emojiCell = textFinder.findNext();
+  if (emojiCell == null) {
+    sheet.appendRow([event.reaction, 1]);
+    //sheet.getRange(sheet.getLastRow() + 1, 1,).setValues(event.reaction, 0);
+  } else {
+    nextCell = sheet.getRange(emojiCell.getRow(), emojiCell.getColumn() + 1);
+    nextCell.setValue(nextCell.getValue() + 1);
+  }
+}
 
+function newMessage(text = undefined, thread) {
+  var data = {
+    'text': text || ':not-bad:', 
+    // 'thread_ts': thread || ''
+    //https://asteasolution-it03267.slack.com/archives/C05EKHEF52B/p1689151108852829
+  };
 
+  if (thread) {
+    data.thread_ts = thread;
+  }
 
+  var options = {
+    'method': 'post',
+    'contentType': 'application/json',
+    // Convert the JavaScript object to a JSON string.
+    'payload': JSON.stringify(data)
+  };
+
+  return UrlFetchApp.fetch(PropertiesService.getScriptProperties().getProperty("SLACK_WEBHOOK_URL"), options);
+}
+
+function postMessage(text, channel, thread) {
+  let options = {
+    'method': 'post',
+    'headers': {
+      'Authorization': PropertiesService.getScriptProperties().getProperty('SLACK_AUTHENTICATION_TOKEN')
+    },
+    'payload': {
+      'channel': channel,
+      'text': text
+    }
+  };
+
+  if (thread) {
+    options.payload.thread_ts = thread;
+  }
+
+  return UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', options);
+}
 
 
