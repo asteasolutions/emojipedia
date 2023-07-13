@@ -120,11 +120,11 @@ const threadChannelCell = "B2";
 
 function handleNewThread(userId) {
   const spreadSheet = SpreadsheetApp.openByUrl(PropertiesService.getScriptProperties().getProperty('SPREADSHEET_URL'));
-  const sheet = spreadSheet.getSheetByName('threads');
+  const threadsSheet = spreadSheet.getSheetByName('threads');
 
-  let threadChannel = sheet.getRange(threadChannelCell).getValue();
+  let threadChannel = threadsSheet.getRange(threadChannelCell).getValue();
 
-  let currentThread = sheet.getRange(currentThreadCell).getValue();
+  let currentThread = threadsSheet.getRange(currentThreadCell).getValue();
 
   let postMessageResponse = JSON.parse(postMessage(`A new thread was created by <@${userId}>`, threadChannel));
   let newThread = postMessageResponse.ts;
@@ -136,7 +136,7 @@ function handleNewThread(userId) {
   }
 
   // change currentThread
-  sheet.getRange(currentThreadCell).setValue(newThread);
+  threadsSheet.getRange(currentThreadCell).setValue(newThread);
 
   return ContentService.createTextOutput();
 }
