@@ -3,7 +3,9 @@ function handleEvent(request) {
   const REACTION_REMOVED = "reaction_removed";
   const EMOJI_CHANGED = "emoji_changed";
 
-  let event = request.postData.contents.event;
+  let contents = JSON.parse(request.postData.contents);
+
+  let event = contents.event;
   let eventType = event.type;
 
   switch (eventType) {
