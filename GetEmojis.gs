@@ -29,7 +29,8 @@ function emojiChangeEvent(event) {
   switch (subtype) {
     case "add":
       emojisSheet.appendRow([event.name, 0]);
-      postMessage(`A new emoji appeared :${event.name}:!`, threadsSheet.getRange(threadChannelCell).getValue(), threadsSheet.getRange(currentThreadCell).getValue());
+      postMessage(`A new emoji appeared!`, threadsSheet.getRange(threadChannelCell).getValue(), threadsSheet.getRange(currentThreadCell).getValue());
+      postMessage(`:${event.name}:`, threadsSheet.getRange(threadChannelCell).getValue(), threadsSheet.getRange(currentThreadCell).getValue());
       break;
     case "remove":
       for (let i in event.names) {
