@@ -5,16 +5,16 @@ const debugSheet = ss.getSheetByName('debug');
 function doPost(request) {
   const SLASH_COMMAND_TYPE = "application/x-www-form-urlencoded";
   const EVENT_COMMAND_TYPE = "application/json";
-  
+
   if (request.postData.type == SLASH_COMMAND_TYPE) {
     return handleSlashCommand(request);
   } else if (request.postData.type == EVENT_COMMAND_TYPE) {
-    return handleEvent(request);
-  }
+    let contents = JSON.parse(request.postData.contents);
+    if (contents.challenge) {
+      return ContentService.createTextOutput(contents.challenge);
+    }
 
-  let contents = request.postData.contents;
-  if (contents.challenge) {
-    return ContentService.createTextOutput(contents.challenge);
+    return handleEvent(request);
   }
 
 }
