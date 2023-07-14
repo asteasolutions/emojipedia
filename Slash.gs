@@ -77,6 +77,14 @@ function getBlock(emojiName, rank, uses, imageUrl) {
 
 
 function getLeastUsedEmojies(number = 10) {
+  if (!Number.isNumber(number)) {
+    return ContentService.createTextOutput("Invalid input! Input must be a positive number!");
+  }
+
+  if (number <= 0) {
+    return ContentService.createTextOutput("Invalid number!");
+  }
+  
   const bottE = getSortedEmojis(sheet, number, LeaderboardType.LEAST_USED).map((e, i) => {
     return getBlock(e[0], i + 1, e[1], imageURLsWorst[i] ?? imageURLsWorst[10])
   });
@@ -99,6 +107,13 @@ function getLeastUsedEmojies(number = 10) {
 }
 
 function getTopEmojies(user_id, number = 10) {
+  if (!Number.isNumber(number)) {
+    return ContentService.createTextOutput("Invalid input! Input must be a positive number!");
+  }
+
+  if (number <= 0) {
+    return ContentService.createTextOutput("Invalid number!");
+  }
   //if(number > 10){
   // const numberOfRanksOver10 = number - 10
   // for(rank = 0; rank < numberOfRanksOver10; rank++){
