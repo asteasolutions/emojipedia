@@ -1,35 +1,43 @@
-function doPost(event) {
-  const REACTION_ADDED = "reaction_added";
-  const REACTION_REMOVED = "reaction_removed";
+const ss = SpreadsheetApp.openByUrl(PropertiesService.getScriptProperties().getProperty('SPREADSHEET_URL'));
+const sheet = ss.getSheetByName('Sheet1');
+const debugSheet = ss.getSheetByName('debug');
 
-  let contents = JSON.parse(event.postData.contents);
-  let challenge = contents.challenge;
+function doPost(request) {
+  const SLASH_COMMAND_TYPE = "application/x-www-form-urlencoded";
+  const EVENT_COMMAND_TYPE = "application/json";
 
-  // is an event
-  if (contents.event) {
-    let event = contents.event;
-    let eventType = event.type;
-
-    let data = {
-      'text': null
-    };
-
-    switch (eventType) {
-      case REACTION_ADDED:
-        data.text = `A reaction of type :${event.reaction}: was added!`;
-        break;
-      case REACTION_REMOVED:
-        data.text = `A reaction of type :${event.reaction}: was removed!`;
-        break;
+  if (request.postData.type == SLASH_COMMAND_TYPE) {
+    return handleSlashCommand(request);
+  } else if (request.postData.type == EVENT_COMMAND_TYPE) {
+    let contents = JSON.parse(request.postData.contents);
+    if (contents.challenge) {
+      return ContentService.createTextOutput(contents.challenge);
     }
 
-    let options = {
-      'contentType': 'application/json',
-      'payload': JSON.stringify(data)
-    };
-
-    UrlFetchApp.fetch(PropertiesService.getScriptProperties().getProperty("SLACK_WEBHOOK_URL"), options);
+    return handleEvent(request);
   }
 
-  return ContentService.createTextOutput(challenge);
 }
+
+function postMessage(text, channel, thread) {
+  let options = {
+    'method': 'post',
+    'headers': {
+      'Authorization': PropertiesService.getScriptProperties().getProperty('SLACK_AUTHENTICATION_TOKEN')
+    },
+    'payload': {
+      'channel': channel,
+      'text': text
+    }
+  };
+
+  if (thread) {
+    options.payload.thread_ts = thread;
+  }
+
+  Logger.log(options);
+
+  return UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', options);
+}
+
+
