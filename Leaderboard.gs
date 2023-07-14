@@ -3,15 +3,12 @@ const LeaderboardType = {
   LEAST_USED: 1
 };
 
-function run() {
-  const ss = SpreadsheetApp.openByUrl(PropertiesService.getScriptProperties().getProperty('SPREADSHEET_URL'));
-  const sheet = ss.getSheetByName('debug');
-
-  getSortedEmojis(sheet, 3, LeaderboardType.MOST_USED);
-}
-
 function getSortedEmojis(sheet, leaderboardLength, leaderboardType) {
   let values = sheet.getDataRange().getValues();
+
+  if (leaderboardLength > values.length) {
+    leaderboardLength = values.length;
+  }
 
   if (leaderboardType == LeaderboardType.MOST_USED) {
     values.sort(compareSheetRecords).reverse();

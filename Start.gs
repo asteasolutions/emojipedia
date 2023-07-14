@@ -39,5 +39,3 @@ function postMessage(text, channel, thread) {
 
   return UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', options);
 }
-
-
