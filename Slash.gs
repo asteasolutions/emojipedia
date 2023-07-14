@@ -91,7 +91,9 @@ function getBlock(emojiName, rank, uses, imageUrl) {
 
 
 function getLeastUsedEmojies(user_id, number = 15) {
-  if (!Number.isInteger(number)) {
+  number = parseInt(number);
+
+  if (!number) {
     return ContentService.createTextOutput("Invalid input! Input must be a positive number!");
   }
 
@@ -120,7 +122,9 @@ function getLeastUsedEmojies(user_id, number = 15) {
 }
 
 function getTopEmojies(user_id, number = 15) {
-  if (!Number.isInteger(number)) {
+  number = parseInt(number);
+
+  if (!number) {
     return ContentService.createTextOutput("Invalid input! Input must be a positive number!");
   }
 
