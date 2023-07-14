@@ -14,6 +14,10 @@ function handleSlashCommand(request) {
 }
 
 function handleGetEmojiCount(emojiToFind) {
+  // remove : from emoji
+  // :emoji: becomes emoji
+  emojiToFind.replaceAll(':', '');
+
   var emojiColumn = sheet.getRange(1, 1, sheet.getLastRow(), 1);
   var textFinder = emojiColumn.createTextFinder(emojiToFind);
 
