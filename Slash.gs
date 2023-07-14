@@ -133,44 +133,11 @@ function getTopEmojies(user_id, number = 10) {
       'blocks': JSON.stringify(topE),
       'channel': user_id
     }
-  }
-    ;
-
-  let response = UrlFetchApp.fetch("https://slack.com/api/chat.postMessage", options);
-  Logger.log(response);
-  return ContentService.createTextOutput();
-}
-
-function getLeastUsed() {
-  const botE = getSortedEmojis(sheet, 1, 1)
-    ;
-  Logger.log(botE);
-  let options = {
-    'method': 'post',
-    'headers': {
-      'Authorization': PropertiesService.getScriptProperties().getProperty('SLACK_AUTHENTICATION_TOKEN')
-    },
-    'payload': {
-      'blocks': JSON.stringify([{
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": `LAAAST PLACE\n:${botE[0][0]}: ${botE[0][1]} uses`
-        },
-        "accessory": {
-          "type": "image",
-          "image_url": "https://i.imgur.com/wHrs0Z6.jpg",
-          "alt_text": "alt text for image"
-        }
-      }]),
-      'channel': "C05EKHEF52B"
-    }
   };
 
   let response = UrlFetchApp.fetch("https://slack.com/api/chat.postMessage", options);
   Logger.log(response);
   return ContentService.createTextOutput();
-
 }
 
 
